@@ -1,0 +1,72 @@
+{
+  "version": "1.0",
+  "passwordHash": "8c6976e8b8c8e9e2e6e9e1e8e3e3c0f4d27b3c4a5a8f7e8e6c3e0c4d27b3c",
+  "maxIndex": "1.74",
+  "indexes": ["1.50", "1.56", "1.60", "1.67", "1.74"],
+  "priceRanges": {
+    "1.50": {
+      "ranges": [
+        { "min": 0, "max": 2, "price": 1200 },
+        { "min": 2, "max": 4, "price": 1500 },
+        { "min": 4, "max": 6, "price": 2000 },
+        { "min": 6, "max": 8, "price": 2800 },
+        { "min": 8, "max": 20, "price": 4500 }
+      ]
+    },
+    "1.56": {
+      "ranges": [
+        { "min": 0, "max": 2, "price": 1800 },
+        { "min": 2, "max": 4, "price": 2200 },
+        { "min": 4, "max": 6, "price": 3000 },
+        { "min": 6, "max": 8, "price": 4200 },
+        { "min": 8, "max": 20, "price": 5500 }
+      ]
+    },
+    "1.60": {
+      "ranges": [
+        { "min": 0, "max": 2, "price": 2500 },
+        { "min": 2, "max": 4, "price": 3200 },
+        { "min": 4, "max": 6, "price": 4000 },
+        { "min": 6, "max": 8, "price": 5500 },
+        { "min": 8, "max": 20, "price": 7200 }
+      ]
+    },
+    "1.67": {
+      "ranges": [
+        { "min": 0, "max": 2, "price": 3500 },
+        { "min": 2, "max": 4, "price": 4500 },
+        { "min": 4, "max": 6, "price": 5800 },
+        { "min": 6, "max": 8, "price": 7500 },
+        { "min": 8, "max": 20, "price": 9500 }
+      ]
+    },
+    "1.74": {
+      "ranges": [
+        { "min": 0, "max": 2, "price": 5000 },
+        { "min": 2, "max": 4, "price": 6500 },
+        { "min": 4, "max": 6, "price": 8000 },
+        { "min": 6, "max": 8, "price": 10000 },
+        { "min": 8, "max": 20, "price": 12500 }
+      ]
+    }
+  },
+  "coatingPrices": {
+    "blue-cut": 600,
+    "anti-refle": 800,
+    "photochromic": 1200,
+    "drive": 900,
+    "hydrophobic": 400,
+    "anti-fog": 500,
+    "scratch-resistant": 300
+  },
+  "laborCost": 600,
+  "sgkContribution": 150,
+  "specialManufactureThreshold": 7.00,
+  "highPowerInterpolationStart": 6.00,
+  "frameEffects": {
+    "small": { "ekartman": 48, "height": 42, "bridge": 18, "factor": 0.9 },
+    "medium": { "ekartman": 52, "height": 48, "bridge": 20, "factor": 1.0 },
+    "large": { "ekartman": 56, "height": 54, "bridge": 22, "factor": 1.15 }
+  },
+  "changeLog": []
+}

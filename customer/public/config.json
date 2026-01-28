@@ -1,0 +1,37 @@
+{
+  "welcome": {
+    "title": "Lens Öneri Sistemi",
+    "subtitle": "3 adımda sana ideal camı bulalım"
+    "steps": [
+      "Numaranızı girin",
+      "Çerçevenizi seçin",
+      "Kullanımınızı anlatın"
+    ]
+  },
+  "calculator": {
+    "step1": {
+      "title": "Numaranızı Girin",
+      "subtitle": "Sağ ve sol göz numaralarını girin"
+    },
+    "step2": {
+      "title": "Çerçevenizi Seçin",
+      "subtitle": "Çerçeve ölçülerini girin"
+    },
+    "step3": {
+      "title": "Lens Tipi Seçin",
+      "subtitle": "Hangi tip lens istiyorsunuz?"
+    },
+    "step4": {
+      "title": "Kullanımınızı Anlatın",
+      "subtitle": "Günlük kullanımınızı açıklayın"
+    },
+    "step5": {
+      "title": "Öncelik Belirleyin",
+      "subtitle": "Sizin için en önemli ne?"
+    }
+  },
+  "results": {
+    "title": "Sizin İçin Öneriler",
+    "subtitle": "Hazırladığımız 3-4 seçenekten birini seçin"
+    }
+}
