@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import LensVisualizer from '../components/simulation/LensVisualizer';
 import { useLocalization } from '../../../shared/src/contexts/LocalizationContext';
 import { PrescriptionForm } from '../components/forms/PrescriptionForm';
@@ -7,6 +7,9 @@ import { LensTypeSelector } from '../components/forms/LensTypeSelector';
 import { PrescriptionData } from '../types/prescription';
 import { FrameData } from '../types/frame';
 import { LensType } from '../types/lens';
+
+// R3F versiyonunu lazy load ile yükle
+const LensVisualizer3D = lazy(() => import('../components/simulation/LensVisualizer3D'));
 
 export const CalculatorPage: React.FC = () => {
   const { locale } = useLocalization();
@@ -18,6 +21,7 @@ export const CalculatorPage: React.FC = () => {
   const [lensType, setLensType] = useState<LensType>('uzak');
   const [showComparison, setShowComparison] = useState(true);
   const [comparisonIndex, setComparisonIndex] = useState(1.67);
+  const [use3D, setUse3D] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -82,14 +86,46 @@ export const CalculatorPage: React.FC = () => {
                 </div>
               )}
 
+              {/* 3D/2D Toggle Button */}
+              <div className="flex justify-end mb-2">
+                <button
+                  onClick={() => setUse3D(!use3D)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${use3D
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                >
+                  {use3D ? '🎮 3D WebGL Aktif' : '✨ 3D Görünüme Geç'}
+                </button>
+              </div>
+
               <div className="h-[500px]">
-                <LensVisualizer
-                  diopter={prescription.rightEye.sph || -2.00}
-                  index={1.50}
-                  diameter={65}
-                  showComparison={showComparison}
-                  comparisonIndex={comparisonIndex}
-                />
+                {use3D ? (
+                  <Suspense fallback={
+                    <div className="h-full flex items-center justify-center bg-slate-900 rounded-2xl">
+                      <div className="text-white text-center">
+                        <div className="animate-spin w-8 h-8 border-4 border-teal-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+                        <p>3D Sahne Yükleniyor...</p>
+                      </div>
+                    </div>
+                  }>
+                    <LensVisualizer3D
+                      diopter={prescription.rightEye.sph || -2.00}
+                      index={1.50}
+                      diameter={65}
+                      showComparison={showComparison}
+                      comparisonIndex={comparisonIndex}
+                    />
+                  </Suspense>
+                ) : (
+                  <LensVisualizer
+                    diopter={prescription.rightEye.sph || -2.00}
+                    index={1.50}
+                    diameter={65}
+                    showComparison={showComparison}
+                    comparisonIndex={comparisonIndex}
+                  />
+                )}
               </div>
               <p className="text-sm text-gray-500 mt-4 text-center">
                 * Standart 1.50 indeksli lens simülasyonu.
