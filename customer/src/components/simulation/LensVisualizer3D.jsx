@@ -154,6 +154,7 @@ export default function LensVisualizer3D({
     diameter = 70,
     showComparison = true,
     comparisonIndex = 1.67,
+    customStats = null, // Kalibrasyon için dışarıdan veri
 }) {
     const [stats, setStats] = useState(null);
     const [compStats, setCompStats] = useState(null);
@@ -164,6 +165,12 @@ export default function LensVisualizer3D({
     const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
 
     useEffect(() => {
+        if (customStats) {
+            setStats(customStats);
+            setCompStats(null); // Kalibrasyonda karşılaştırma kapatılır
+            return;
+        }
+
         const s = LensPhysics.calculateThickness(diopter, index, diameter);
         setStats(s);
 
@@ -173,7 +180,7 @@ export default function LensVisualizer3D({
         } else {
             setCompStats(null);
         }
-    }, [diopter, index, diameter, showComparison, comparisonIndex]);
+    }, [diopter, index, diameter, showComparison, comparisonIndex, customStats]);
 
     useEffect(() => {
         if (viewMode === "side") return;

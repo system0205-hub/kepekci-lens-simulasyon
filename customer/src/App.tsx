@@ -6,6 +6,7 @@ import { Layout } from './components/layout/Layout';
 import { WelcomePage } from './pages/WelcomePage';
 import { CalculatorPage } from './pages/CalculatorPage';
 import { ResultsPage } from './pages/ResultsPage';
+import { CalibrationPage } from './pages/CalibrationPage';
 
 const App: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ const App: React.FC = () => {
               <Route path="/" element={<WelcomePage />} />
               <Route path="/calculator" element={<CalculatorPage />} />
               <Route path="/results" element={<ResultsPage />} />
+              <Route path="/calibration" element={<CalibrationPage />} />
             </Routes>
           </Layout>
         </Router>
