@@ -91,8 +91,8 @@ export const CalculatorPage: React.FC = () => {
                 <button
                   onClick={() => setUse3D(!use3D)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${use3D
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-teal-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                 >
                   {use3D ? '🎮 3D WebGL Aktif' : '✨ 3D Görünüme Geç'}

@@ -21,7 +21,7 @@ function buildLensGeometry({ centerMm, edgeMm, diameterMm, segments = 160, radia
     };
 
     const pts = [];
-    const rMin = 0.001 * mmToWorld;
+    const rMin = 0; // Merkezden başla (Delik olmasın, tam dolu)
 
     for (let i = 0; i <= radialSamples; i++) {
         const r = THREE.MathUtils.lerp(rMin, radius, i / radialSamples);
@@ -48,7 +48,7 @@ function LensMesh({ thickness, diameterMm, ior, isComparison, viewMode }) {
                 diameterMm,
                 segments: 180,
                 radialSamples: 110,
-                mmToWorld: 0.03,
+                mmToWorld: 0.05,
             }),
         [thickness.center, thickness.edge, diameterMm]
     );
@@ -57,20 +57,12 @@ function LensMesh({ thickness, diameterMm, ior, isComparison, viewMode }) {
 
     return (
         <mesh geometry={geometry} castShadow receiveShadow>
-            <MeshTransmissionMaterial
-                transmission={1}
-                thickness={0.9}
-                ior={ior}
-                roughness={viewMode === "front" ? 0.09 : 0.06}
-                clearcoat={1}
-                clearcoatRoughness={0.08}
-                chromaticAberration={0.02}
-                anisotropy={0.08}
-                distortion={0.02}
-                distortionScale={0.25}
-                attenuationColor={new THREE.Color(tint)}
-                attenuationDistance={2.8}
-                envMapIntensity={isComparison ? 1.15 : 1.0}
+            <meshStandardMaterial
+                color="#8ecae6" // Daha tok, doygun bir mavi
+                roughness={0.3}
+                metalness={0.1}
+                flatShading={false}
+                side={THREE.DoubleSide} // Her ihtimale karşı iç yüzeyi de renderla
             />
         </mesh>
     );
@@ -93,20 +85,35 @@ function LensScene({
     useFrame((_, delta) => {
         if (!groupRef.current) return;
 
-        if (viewMode === "side") {
-            groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, Math.PI / 2, 0.14);
-            return;
-        }
-        if (viewMode === "front") {
-            groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, 0, 0.14);
-            return;
-        }
+        // 3D (ISO): Yatık, kendi etrafında dönüyor (Z ekseni çünkü yatık)
+        if (viewMode === "iso") {
+            // Yumuşak geçişle yatık pozisyona (X=0)
+            groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, 0, 0.1);
 
-        if (autoRotate && !isDragging) {
-            groupRef.current.rotation.y += delta * 0.55;
-        } else {
-            const target = THREE.MathUtils.degToRad(manualRotationDeg);
-            groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, target, 0.18);
+            if (autoRotate && !isDragging) {
+                groupRef.current.rotation.y += delta * 0.55;
+            } else {
+                const target = THREE.MathUtils.degToRad(manualRotationDeg);
+                groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, target, 0.18);
+            }
+        }
+        // Yan: Dik, kendi etrafında dönüyor
+        else if (viewMode === "side") {
+            // Yumuşak geçişle dik pozisyona (X=90)
+            groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, Math.PI / 2, 0.1);
+
+            if (autoRotate && !isDragging) {
+                groupRef.current.rotation.y += delta * 0.55; // Dik dururken Y ekseninde dön
+            } else {
+                groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, Math.PI / 2, 0.14);
+            }
+        }
+        // Ön: Dik, sabit (Dönmez)
+        else if (viewMode === "front") {
+            // Yumuşak geçişle dik pozisyona (X=90)
+            groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, Math.PI / 2, 0.1);
+            // Y rotasyonunu sıfırla (tam karşı)
+            groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, 0, 0.14);
         }
     });
 
@@ -124,11 +131,11 @@ function LensScene({
                     <LensMesh thickness={stats} diameterMm={diameterMm} ior={index} isComparison={false} viewMode={viewMode} />
                 ) : (
                     <group>
-                        <group position={[-1.45, 0, 0]}>
+                        <group position={[-1.8, 0, 0]}>
                             <LensMesh thickness={stats} diameterMm={diameterMm} ior={index} isComparison={false} viewMode={viewMode} />
                         </group>
                         {compStats && (
-                            <group position={[1.45, 0, 0]}>
+                            <group position={[1.8, 0, 0]}>
                                 <LensMesh thickness={compStats} diameterMm={diameterMm} ior={comparisonIndex} isComparison={true} viewMode={viewMode} />
                             </group>
                         )}
@@ -136,7 +143,7 @@ function LensScene({
                 )}
             </group>
 
-            <OrbitControls enablePan={false} enableDamping dampingFactor={0.08} minDistance={2.2} maxDistance={7} />
+            <OrbitControls enablePan={false} enableDamping dampingFactor={0.08} minDistance={1.5} maxDistance={10} />
         </>
     );
 }
@@ -189,12 +196,13 @@ export default function LensVisualizer3D({
 
     if (!stats) return null;
 
+    // Kamera ayarları - Camları büyütmek için daha da yakınlaştırıldı
     const cameraPos =
         viewMode === "side"
-            ? [4.8, 0.25, 0]
+            ? [3.0, 0, 0] // Yan (Daha yakın)
             : viewMode === "front"
-                ? [0, 0.25, 4.8]
-                : [3.2, 1.15, 3.4];
+                ? [0, 0, 3.2] // Ön (Daha yakın)
+                : [2.0, 2.0, 2.0]; // 3D (Daha yakın)
 
     return (
         <div className="w-full relative bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
@@ -241,7 +249,7 @@ export default function LensVisualizer3D({
             </div>
 
             <div
-                className="relative min-h-[520px] flex items-center justify-center p-6 overflow-hidden"
+                className="relative min-h-[500px] flex items-center justify-center p-6 overflow-hidden"
                 onMouseDown={() => { setIsRotating(true); setAutoRotate(false); setViewMode("manual"); }}
                 onMouseUp={() => setIsRotating(false)}
                 onMouseLeave={() => setIsRotating(false)}
@@ -269,8 +277,8 @@ export default function LensVisualizer3D({
                 </Canvas>
 
                 {showComparison && compStats && (
-                    <div className="absolute z-30 flex flex-col items-center justify-center">
-                        <div className="bg-slate-900/90 p-2 rounded-full border border-slate-700 mb-2 backdrop-blur">
+                    <div className="absolute z-30 flex flex-col items-center justify-center mt-32 pointer-events-none">
+                        <div className="bg-slate-900/90 p-2 rounded-full border border-slate-700 mb-2 backdrop-blur shadow-lg">
                             <ArrowRightLeft className="w-4 h-4 text-teal-400" />
                         </div>
                         <div className="text-[10px] text-teal-400 font-bold text-center">
